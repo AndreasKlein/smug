@@ -7,18 +7,20 @@
             [smug.music :refer [generate-score]]
             [smug.render.lilypond :refer [render-svg-to]]))
 
-(defn render-score []
-  (let [score (generate-score 32)
-        out (render-svg-to
-             score
-             (java.io.File/createTempFile "score" ".svg"))]
-    {:headers {"Content-Type" "image/svg+xml"}
-     :body out}))
+(defn render-score 
+  ([] (render-score "50"))
+  ([difficulty] 
+    (let [score (generate-score 64 difficulty)
+          out (render-svg-to
+               score
+               (java.io.File/createTempFile "score" ".svg"))]
+      {:headers {"Content-Type" "image/svg+xml"}
+       :body out})))
 
 
 (defroutes app-routes
-  (GET "/" [] "<img src=\"/score.svg\" />")
-  (GET "/score.svg" [] (render-score))
+  (GET "/" [] (render-score))
+  (GET "/:difficulty" [difficulty] (render-score difficulty))
   (route/not-found "Not Found"))
 
 (def app

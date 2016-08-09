@@ -80,12 +80,14 @@
   (map ->note bar))
 
 (defn flatten-groups [groups]
-  (map #(apply concat %1) groups))
+  (map #(apply concat (first %)) groups))
 
 ;;; INTERFACE
 
-(defn generate-score [n]
-  (let [groups (run n [q]
-                 (baro q))
+(defn generate-score [bar-count difficulty]
+  (let [valid-difficulty (min 200 (Integer/parseInt difficulty))
+        groups (repeatedly bar-count 
+                #(take 1 (drop (rand-int valid-difficulty) 
+                              (run* [q] (baro q)))))
         bars (flatten-groups groups)]
     {:bars (map ->bar bars)}))
